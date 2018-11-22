@@ -9,15 +9,19 @@ CapHosp
 levels(CapHosp$tipocapacidad)
 Muni <- subset(CapHosp, CapHosp$mpio == "MARSELLA" & CapHosp$tipocapacidad == 'CAMAS'); Muni
 
-mean(Muni$cantidadcapacidad);mean
+MediaMuni <- mean(Muni$cantidadcapacidad);MediaMuni
 
 #Respuesta: La media en camas del municipio de Marsella es de 3.333
 
 # 2. El municipio seleccionado tiene una capacidad hospitalaria dentro de lo esperado respecto al promedio del departamento?
 
 # Capacidad hospitalaria, en camas, del departamento
-
 Dep <- subset(CapHosp, CapHosp$dpto == 'Risaralda' & CapHosp$tipocapacidad == 'CAMAS'); Dep
+MediaDep <- mean(Dep$cantidadcapacidad);MediaDep
+
+# La media en camas del departamento es de 16.644
+
+# Prueba de Hipótesis
 
 # 3. Tomar una muestra de 25 entidades, estimar la media (capacidad hospitalaria) con intervalo de confianza del 90%
 # a. En general
