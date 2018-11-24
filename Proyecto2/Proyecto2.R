@@ -5,28 +5,28 @@ setwd("C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias
 CapHosp <- read.csv("./Capacidad_Hospitalaria_de_Risaralda.csv")
 
 # 1. Tome un municipio de Risaralda y encuentre la media en camas 
-CapHosp
-levels(CapHosp$tipocapacidad)
-Muni <- subset(CapHosp, CapHosp$mpio == "MARSELLA" & CapHosp$tipocapacidad == 'CAMAS'); Muni
+  CapHosp
+  levels(CapHosp$tipocapacidad)
+  Muni <- subset(CapHosp, CapHosp$mpio == "MARSELLA" & CapHosp$tipocapacidad == 'CAMAS'); Muni
 
-MediaMuni <- mean(Muni$cantidadcapacidad);MediaMuni
+  MediaMuni <- mean(Muni$cantidadcapacidad);MediaMuni
 
 #Respuesta: La media en camas del municipio de Marsella es de 3.333
 
 # 2. El municipio seleccionado tiene una capacidad hospitalaria dentro de lo esperado respecto al promedio del departamento?
 
-# Capacidad hospitalaria, en camas, del departamento
-Dep <- subset(CapHosp, CapHosp$dpto == 'Risaralda' & CapHosp$tipocapacidad == 'CAMAS'); Dep
-MediaDep <- mean(Dep$cantidadcapacidad);MediaDep
+  # Capacidad hospitalaria, en camas, del departamento
+  Dep <- subset(CapHosp, CapHosp$dpto == 'Risaralda' & CapHosp$tipocapacidad == 'CAMAS'); Dep
+  MediaDep <- mean(Dep$cantidadcapacidad);MediaDep
 
-# La media en camas del departamento es de 16.644
+  # La media en camas del departamento es de 16.644
 
-# Prueba de Hipótesis
+  # Prueba de Hipótesis
 
 # 3. Tomar una muestra de 25 entidades, estimar la media (capacidad hospitalaria) con intervalo de confianza del 90%
-# a. En general
-# b. Municipios pequeños
-# c. Área metropolitana
+  # a. En general
+  # b. Municipios pequeños
+  # c. Área metropolitana
 
 # 4.¿El número de salas en Santa Rosa está en el promedio de los municipios "pequeños" de Risaralda?
 
