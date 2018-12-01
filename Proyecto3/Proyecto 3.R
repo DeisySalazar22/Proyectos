@@ -1,36 +1,34 @@
 # PROYECTO 3 - CAPTURAS 
 
 # Carga de archivo
-dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
+dir_ar <- "D:/Escritorio/Maestria/Inferencia\ Estadistica"
+#dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
 setwd(dir_ar)
 info_capturas <- read.csv("Capturas_2018.csv")
+info_capturas <- subset(info_capturas, info_capturas$Fecha != 'TOTAL')
 
-#install.packages("RWeka")
-library(RWeka)
-write.arff(info_capturas, file = "capturas.arff")
+# Delitos mas capturados en el año 2018
+delitosGeneral <- aggregate(info_capturas$Cantidad, by=list(Delito=info_capturas$Delito.Captura), FUN=sum)
+head(delitosGeneral[order(delitosGeneral$x, decreasing=TRUE), ], n=5)
 
-#Capturas para el departamento de Risaralda
-capturas_risa <- subset(info_capturas, info_capturas$Departamento=='RISARALDA');capturas_risa
-#write.arff(capturas_risa, file = "capturas_risa.arff")
+# Delitos de hombres capturados en el año 2018 
+capturasHombre <- subset(info_capturas, info_capturas$Sexo == 'MASCULINO')
+delitosHombre <- aggregate(capturasHombre$Cantidad, by=list(Delito=capturasHombre$Delito.Captura), FUN=sum)
+head(delitosHombre[order(delitosHombre$x, decreasing=TRUE), ], n=5)
 
-# Eliminación columnas no deseadas
-capturas_risa$Cantidad <- capturas_risa$CÃ³digo.DANE <- capturas_risa$CÃ³digo.DANE <- NULL
-capturas_risa$Escolaridad <- NULL
+# Delitos de mujeres capturados en el año 2018 
+capturasMujer <- subset(info_capturas, info_capturas$Sexo == 'FEMENINO')
+delitosMujer <- aggregate(capturasMujer$Cantidad, by=list(Delito=capturasMujer$Delito.Captura), FUN=sum)
+head(delitosMujer[order(delitosMujer$x, decreasing=TRUE), ], n=5)
 
-# Capturas de Hombres
-captu_hombres <- subset(capturas_risa, capturas_risa$Sexo == 'MASCULINO');captu_hombres
+# Analisis de captura por causa de Violencia Intrafamiliar
+capturas_violencia_intrafamiliar <- subset(info_capturas, info_capturas$Delito.Captura == 'ARTÃCULO 229. VIOLENCIA INTRAFAMILIAR')
 
-# Tabla de frecuencias de delitos hombres
-frec_delito <- sort(table(captu_hombres$Delito.Captura), decreasing=T);frec_delito
-frec_delito.get(0)
-plot(frec_delito)
+capturas_violencia_intrafamiliar$Fecha <- capturas_violencia_intrafamiliar$Hora <- NULL
+capturas_violencia_intrafamiliar$Edad <- capturas_violencia_intrafamiliar$Barrio <- NULL
+capturas_violencia_intrafamiliar$Zona <- capturas_violencia_intrafamiliar$Clase.de.sitio <- NULL
+capturas_violencia_intrafamiliar$Estado.civil <- capturas_violencia_intrafamiliar$Clase.de.empleado <- NULL
+capturas_violencia_intrafamiliar$ProfesiÃ³n <- capturas_violencia_intrafamiliar$Escolaridad <- NULL
+capturas_violencia_intrafamiliar$CÃ³digo.DANE <- capturas_violencia_intrafamiliar$Delito.Captura <- NULL
 
-
-###########################################################
-
-# Capturas de mujeres
-captu_mujeres <- subset(capturas_risa, capturas_risa$Sexo == 'FEMENINO');captu_mujeres
-
-# Tabla de frecuencias delitos mujeres
-frec_del_fem <- table(captu_mujeres$Delito.Captura);frec_del_fem
-
+capturas_violencia_intrafamiliar$DÃ.a <- factor(capturas_violencia_intrafamiliar$DÃ.a, levels=c("Lunes","Martes","MiÃ©rcoles","Jueves","Viernes","SÃ¡bado","Domingo"), ordered = TRUE)
