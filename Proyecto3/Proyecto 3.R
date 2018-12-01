@@ -1,8 +1,8 @@
 # PROYECTO 3 - CAPTURAS 
 
 # Carga de archivo
-#dir_ar <- "D:/Escritorio/Maestria/Inferencia\ Estadistica"
-dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
+dir_ar <- "D:/Escritorio/Maestria/Inferencia\ Estadistica"
+#dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
 setwd(dir_ar)
 info_capturas <- read.csv("Capturas_2018.csv")
 info_capturas <- subset(info_capturas, info_capturas$Fecha != 'TOTAL')
@@ -51,143 +51,55 @@ var(delitosMujer$x)
 # Resumen
 summary(delitosMujer$x)
 
-# Analisis de captura por causa de Violencia Intrafamiliar
-capturas_violencia_intrafamiliar <- subset(info_capturas, info_capturas$Delito.Captura == 'ARTÃCULO 229. VIOLENCIA INTRAFAMILIAR')
+# Delitos de Risaralda en el año 2018 
+capturasRisaralda <- subset(info_capturas, info_capturas$Departamento == 'RISARALDA')
+delitosRisaralda <- aggregate(capturasRisaralda$Cantidad, by=list(Delito=capturasRisaralda$Delito.Captura), FUN=sum)
+head(delitosRisaralda[order(delitosRisaralda$x, decreasing=TRUE), ], n=5)
+# Media
+mean(delitosRisaralda$x)
+# Mediana
+median(delitosRisaralda$x)
+# Desviacion Estandar
+sd(delitosRisaralda$x)
+# Varianza
+var(delitosRisaralda$x)
+# Resumen
+summary(delitosRisaralda$x)
 
-capturas_violencia_intrafamiliar$Fecha <- capturas_violencia_intrafamiliar$Hora <- NULL
-capturas_violencia_intrafamiliar$Edad <- capturas_violencia_intrafamiliar$Barrio <- NULL
-capturas_violencia_intrafamiliar$Zona <- capturas_violencia_intrafamiliar$Clase.de.sitio <- NULL
-capturas_violencia_intrafamiliar$Estado.civil <- capturas_violencia_intrafamiliar$Clase.de.empleado <- NULL
-capturas_violencia_intrafamiliar$ProfesiÃ³n <- capturas_violencia_intrafamiliar$Escolaridad <- NULL
-capturas_violencia_intrafamiliar$CÃ³digo.DANE <- capturas_violencia_intrafamiliar$Delito.Captura <- NULL
+# COMPARAR CON LA MEDIA DE COLOMBIA
+# Generar consolidacion de las capturas por departamento por delito
+delitosColombiaDepartamento <- aggregate(info_capturas$Cantidad, by=list(Departamento=info_capturas$Departamento, Delito=info_capturas$Delito.Captura), FUN=sum)
 
-capturas_violencia_intrafamiliar$DÃ.a <- factor(capturas_violencia_intrafamiliar$DÃ.a, levels=c("Lunes","Martes","MiÃ©rcoles","Jueves","Viernes","SÃ¡bado","Domingo"), ordered = TRUE)
+# Prueba de Hipótesis Sobre la cantidad de capturas de Risaralda contra el Promedio Nacional
+# Delito Seleccionado: ARTÍCULO 376. TRÁFICO, FABRICACIÓN O PORTE DE ESTUPEFACIENTES
+# Ha = Risaralda tiene una criminalidad mas alta al promedio de colombia
+# Ho = Risaralda tiene una criminalidad igual o mas baja al promedio de colombia
 
-datos <- aggregate(capturas_violencia_intrafamiliar$Cantidad, by=list(Departamento=capturas_violencia_intrafamiliar$Departamento,Municipio=capturas_violencia_intrafamiliar$Municipio, Dia = capturas_violencia_intrafamiliar$DÃ.a, Sexo=capturas_violencia_intrafamiliar$Sexo), FUN=sum)
+media_risaralda = delitosRisaralda$x[delitosRisaralda$Delito== 'ARTÃ\u008dCULO 376. TRÃ\u0081FICO, FABRICACIÃ"N O PORTE DE ESTUPEFACIENTES']; media_risaralda
 
-dias <- aggregate(datos$x, list(Dia = datos$Dia), sum)
-head(dias[order(dias$x, decreasing=TRUE), ], n=3)
+# Calculo del promedio nacional de capturas por delito
+delitosColombia <- delitosColombiaDepartamento[delitosColombiaDepartamento$Delito == 'ARTÃ\u008dCULO 376. TRÃ\u0081FICO, FABRICACIÃ"N O PORTE DE ESTUPEFACIENTES', ]
+# Media
+media_colombia <- mean(delitosColombia$x); media_colombia
+# Mediana
+median(delitosColombia$x)
+# Desviacion Estandar
+desviacion_colombia <- sd(delitosColombia$x); desviacion_colombia
+# Varianza
+var(delitosColombia$x)
+# Resumen
+summary(delitosColombia$x)
 
-departamento <- aggregate(datos$x, list(Departamento = datos$Departamento), sum)
-head(departamento[order(departamento$x, decreasing=TRUE), ], n=3)
+# Desviación estándar del depto
+# Ha = Risaralda tiene una criminalidad mas alta al promedio de colombia
+alpha <- 0.05 # Certeza del 95%
 
+n <- length(delitosColombia$Departamento); n
 
-# ANALISIS DE DATOS
-set.seed(1234)
-indice = sample(2, nrow(capturas_violencia_intrafamiliar), replace = TRUE, prob = c(0.7, 0.3))
-train.data <- capturas_violencia_intrafamiliar[indice == 1,]
-test.data <- capturas_violencia_intrafamiliar[indice == 2,]
+# Z = (media_colombia - media_departamento) / (desviación_estandar / raíz del total)
+z <- (media_colombia - media_risaralda) / (desviacion_colombia / sqrt(n));z #z=0.6928
 
-# Arbol de desicion con RPART
-library(rpart)
-myFormula <- DÃ.a ~ Departamento + Municipio + Sexo
-captura_rpart <- rpart(myFormula, data = train.data, control = rpart.control(minsplit = 10))
-table(predict(captura_rpart), train.data$DÃ.a)
-print(captura_rpart)
-plot(captura_rpart)
-text(captura_rpart, use.n=T)
+z1 <- 1 - qnorm(alpha);z1 # z1 = 2.644
 
-set.seed(1234)
-capturas_violencia_intrafamiliar2 <- capturas_violencia_intrafamiliar
-capturas_violencia_intrafamiliar2$DÃ.a <- NULL
-kmeans.result <- kmeans(capturas_violencia_intrafamiliar2, 7)
-table(capturas_risa$DÃ.a, kmeans.result$cluster)
-
-bundesCluster <- kmeans(tabla[,c(2,4)], 3, nstart = 10)
-bundesCluster
-
-
-#-----------------------------------------------------------------
-# Arbol de decision con RPART
-library(rpart)
-myFormula <- Dia ~ Departamento + x
-captura_rpart <- rpart(myFormula, data = datos)
-table(predict(captura_rpart), datos.Dia)
-print(captura_rpart)
-plot(captura_rpart)
-text(captura_rpart, use.n=T)
-
-
-
-
-
-
-install.packages("RWeka")
-library(RWeka)
-write.arff(info_capturas, file = "capturas.arff")
-
-
-set.seed(1234)
-indice = sample(2, nrow(capturas_risa), replace = TRUE, prob = c(0.7, 0.3)); indice
-train.data <- capturas_risa[indice == 1,]
-test.data <- capturas_risa[indice == 2,]
-
-# Arbol de desicion con PARTY
-install.packages("party")
-library(party)
-myFormula <- DÃ.a ~ Delito.Captura
-captura_ctree <- ctree(myFormula, data = train.data)
-table(predict(captura_ctree), train.data$DÃ.a)
-print(captura_ctree)
-plot(captura_ctree)
-plot(captura_ctree, type= "simple")
-
-table(predict(captura_ctree, newdata = test.data), test.data$DÃ.a)
-
-# Arbol de desicion con RPART
-library(rpart)
-myFormula <- DÃ.a ~ Delito.Captura
-captura_rpart <- rpart(myFormula, data = train.data, control = rpart.control(minsplit = 10))
-table(predict(captura_rpart), train.data$DÃ.a)
-print(captura_rpart)
-plot(captura_rpart)
-text(captura_rpart, use.n=T)
-
-# Cluster con Kmeans
-set.seed(1234)
-capturas_risa2 <- capturas_risa
-capturas_risa2$DÃ.a <- NULL
-kameans.result <- kmeans(capturas_risa2, 7)
-table(capturas_risa$DÃ.a, kmeans.result$cluster)
-
-# Cluster con pamk
-install.packages("fpc")
-library(fpc)
-pamk.result <- pamk(capturas_risa2)
-# número de clusters
-pamk.result$nc
-
-table(pamk.result$pamobject$clustering, capturas_risa$DÃ.a)
-
-# Cluster con pam
-library(cluster)
-pam.result <- pam(capturas_risa2, 7)
-table(pam.result$clustering, capturas_risa$DÃ.a)
-plot(pam.result)
-
-
-
-
-
-
-
-
-
-
-
-# Capturas de Hombres
-captu_hombres <- subset(capturas_risa, capturas_risa$Sexo == 'MASCULINO');captu_hombres
-
-# Tabla de frecuencias de delitos hombres
-frec_delito <- sort(table(captu_hombres$Delito.Captura), decreasing=T);frec_delito
-frec_delito.get(0)
-plot(frec_delito)
-
-
-###########################################################
-
-# Capturas de mujeres
-captu_mujeres <- subset(capturas_risa, capturas_risa$Sexo == 'FEMENINO');captu_mujeres
-
-# Tabla de frecuencias delitos mujeres
-frec_del_fem <- table(captu_mujeres$Delito.Captura);frec_del_fem
+# Como Z = 0.6928 y es menor que Z1 = 2.644, entonces se rechaza la hipótesis alternativa 
+# Se acepta la Ho, es decir, que Risaralda tiene una criminalidad igual o mas baja al promedio de colombia
