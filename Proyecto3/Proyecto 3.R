@@ -1,8 +1,8 @@
 # PROYECTO 3 - CAPTURAS 
 
 # Carga de archivo
-dir_ar <- "D:/Escritorio/Maestria/Inferencia\ Estadistica"
-#dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
+#dir_ar <- "D:/Escritorio/Maestria/Inferencia\ Estadistica"
+dir_ar <- "C:/Users/Deisy\ Salazar\ Parra/Desktop/Info\ Deisy/Maestría\ ISC/Materias/III\ Semestre/Inferencia"
 setwd(dir_ar)
 info_capturas <- read.csv("Capturas_2018.csv")
 info_capturas <- subset(info_capturas, info_capturas$Fecha != 'TOTAL')
@@ -70,6 +70,31 @@ head(dias[order(dias$x, decreasing=TRUE), ], n=3)
 
 departamento <- aggregate(datos$x, list(Departamento = datos$Departamento), sum)
 head(departamento[order(departamento$x, decreasing=TRUE), ], n=3)
+
+
+# ANALISIS DE DATOS
+set.seed(1234)
+indice = sample(2, nrow(capturas_violencia_intrafamiliar), replace = TRUE, prob = c(0.7, 0.3))
+train.data <- capturas_violencia_intrafamiliar[indice == 1,]
+test.data <- capturas_violencia_intrafamiliar[indice == 2,]
+
+# Arbol de desicion con RPART
+library(rpart)
+myFormula <- DÃ.a ~ Departamento + Municipio + Sexo
+captura_rpart <- rpart(myFormula, data = train.data, control = rpart.control(minsplit = 10))
+table(predict(captura_rpart), train.data$DÃ.a)
+print(captura_rpart)
+plot(captura_rpart)
+text(captura_rpart, use.n=T)
+
+set.seed(1234)
+capturas_violencia_intrafamiliar2 <- capturas_violencia_intrafamiliar
+capturas_violencia_intrafamiliar2$DÃ.a <- NULL
+kmeans.result <- kmeans(capturas_violencia_intrafamiliar2, 7)
+table(capturas_risa$DÃ.a, kmeans.result$cluster)
+
+bundesCluster <- kmeans(tabla[,c(2,4)], 3, nstart = 10)
+bundesCluster
 
 
 #-----------------------------------------------------------------
